@@ -78,8 +78,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\GpsLogging.cs" />
     <Compile Include="Assets\Scripts\HeightMapScripts\GPSPosition.cs" />
     <Compile Include="Assets\Scripts\HeightMapScripts\HeightMapGenerator.cs" />
+    <Compile Include="Assets\Scripts\LogHandler.cs" />
     <Compile Include="Assets\Scripts\MenuScripts\MenuController.cs" />
   </ItemGroup>
   <ItemGroup>

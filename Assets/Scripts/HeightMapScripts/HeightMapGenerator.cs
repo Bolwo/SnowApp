@@ -5,11 +5,10 @@ using UnityEngine;
 public class HeightMapGenerator : MonoBehaviour {
 
     public TextAsset GPSData;
-    //private List<GPSPosition> GPSPositions = new List<GPSPosition>();
 
 	// Use this for initialization
 	void Start () {
-		
+	    
 	}
 	
 	// Update is called once per frame
@@ -17,7 +16,7 @@ public class HeightMapGenerator : MonoBehaviour {
 		
 	}
 
-    public void UpdateModel()
+    public void UpdateModel()//Called on button click from menu
     {
         var test = ReadFileToArray();
         foreach(var x in test)
@@ -26,7 +25,7 @@ public class HeightMapGenerator : MonoBehaviour {
         }
 
     }
-    List<GPSPosition> ReadFileToArray()
+    List<GPSPosition> ReadFileToArray() //Converts gps text file data to list of GPSPosition data
     {
         List<string> GPSList = TextAssetToList(GPSData);
         List<GPSPosition> GPSPositions = new List<GPSPosition>();
@@ -41,6 +40,7 @@ public class HeightMapGenerator : MonoBehaviour {
         }
         return GPSPositions;
     }
+
     void CreateHeightMap()
     {
 
@@ -56,5 +56,4 @@ public class HeightMapGenerator : MonoBehaviour {
         }
         return listToReturn;
     }
-
 }

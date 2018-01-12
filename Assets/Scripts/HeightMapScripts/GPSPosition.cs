@@ -1,17 +1,18 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GPSPosition {
+public class GPSPosition : MonoBehaviour {
 
-    public string Longitude;
-    public string Latitude;
-    public string Altitude;
+    public double Longitude;
+    public double Latitude;
+    public double Altitude;
 
     public GPSPosition(string longitude, string latitude, string altitude)
     {
-        Longitude = longitude;
-        Latitude = latitude;
-        Altitude = altitude;
+        Longitude = Convert.ToDouble(longitude);
+        Latitude = Convert.ToDouble(latitude);
+        Altitude = Convert.ToDouble(altitude);
     }
 }

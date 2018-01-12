@@ -26,7 +26,7 @@ public class MenuController : MonoBehaviour {
 
     public void ToggleSettingsPanel()
     {
-        if (settingsPanel.active)
+        if (settingsPanel.activeSelf)
         {
             settingsPanel.gameObject.SetActive(false);
         } else
@@ -39,7 +39,7 @@ public class MenuController : MonoBehaviour {
     {
         Vector3 pos = collapseButton.transform.position;
         
-        if (menuPanel.active)
+        if (menuPanel.activeSelf)
         {
             menuPanel.gameObject.SetActive(false);
             pos.x += 100f;
