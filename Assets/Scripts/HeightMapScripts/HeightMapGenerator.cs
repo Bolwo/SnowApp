@@ -34,7 +34,7 @@ public class HeightMapGenerator : MonoBehaviour {
             var split = item.Split(',');
             if(split[0] == "$GPGGA")
             {
-                GPSPosition pos = new GPSPosition(split[2], split[4], split[9]);
+                GPSPosition pos = new GPSPosition(split[0], split[1], split[2]);
                 GPSPositions.Add(pos);
             }
         }

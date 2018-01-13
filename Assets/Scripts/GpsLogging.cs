@@ -10,6 +10,9 @@ public class GpsLogging : MonoBehaviour {
     // Use this for initialization
     void Start () {
         settingsPanel = GameObject.Find("SettingsPanel");
+
+        settingsPanel.GetComponentInChildren<Text>().text += Application.persistentDataPath;
+        StartCoroutine(StoreCurrentLocation());
     }
 	
 	// Update is called once per frame
@@ -65,10 +68,6 @@ public class GpsLogging : MonoBehaviour {
         else
         {
             settingsPanel.GetComponentInChildren<Text>().text += "Running! SUCCESS!";
-
-            // Access granted and location value could be retrieved
-            //LogHandler.WriteString(Input.location.lastData.latitude + "," + Input.location.lastData.longitude + "," + Input.location.lastData.altitude + "," + Input.location.lastData.horizontalAccuracy + "," + Input.location.lastData.timestamp);
-            //settingsPanel.GetComponentInChildren<Text>().text += ("Location: " + Input.location.lastData.latitude + " " + Input.location.lastData.longitude + " " + Input.location.lastData.altitude + " " + Input.location.lastData.horizontalAccuracy + " " + Input.location.lastData.timestamp);
         }
     }
 
@@ -79,12 +78,17 @@ public class GpsLogging : MonoBehaviour {
         
     }
 
-    public void StoreCurrentLocation()
+    IEnumerator StoreCurrentLocation()
     {
-        if (Input.location.status == LocationServiceStatus.Running || Input.location.status == LocationServiceStatus.Initializing)
+        while(true)
         {
-            settingsPanel.GetComponentInChildren<Text>().text += ("Location: " + Input.location.lastData.latitude + "," + Input.location.lastData.longitude);
+            settingsPanel.GetComponentInChildren<Text>().text += "tick";
+            if (Input.location.status == LocationServiceStatus.Running)
+            {
+                settingsPanel.GetComponentInChildren<Text>().text += "Updated gps text log";
+                LogHandler.WriteString(Input.location.lastData.latitude + "," + Input.location.lastData.longitude + "," + Input.location.lastData.altitude + "," + Input.location.lastData.horizontalAccuracy + "," + Input.location.lastData.timestamp);
+            }
+            yield return new WaitForSeconds(5);
         }
     }
-    
 }

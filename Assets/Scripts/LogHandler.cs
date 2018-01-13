@@ -17,18 +17,15 @@ public class LogHandler : MonoBehaviour {
 
     public static void WriteString(string input)
     {
-        string path = "Assets/GPSLog/gps1.txt";
-
-        //Write some text to the test.txt file
+        string path = Application.persistentDataPath + "/gps1.txt";
+        if (!File.Exists(path))
+        {
+            File.CreateText(path);
+        }
+        
         StreamWriter writer = new StreamWriter(path, true);
         writer.WriteLine(input);
         writer.Close();
-
-        //Re-import the file to update the reference in the editor
-        //AssetDatabase.ImportAsset(path);
-        //TextAsset asset = (TextAsset)Resources.Load("test");
-
-        //Print the text from the file
-        //Debug.Log(asset.text);
+        
     }
 }
