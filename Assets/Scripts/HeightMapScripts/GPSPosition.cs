@@ -3,16 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GPSPosition : MonoBehaviour {
+public class GPSPosition {
 
-    public double Longitude;
-    public double Latitude;
-    public double Altitude;
+    public string Longitude;
+    public string Latitude;
+    public string Altitude;
 
     public GPSPosition(string longitude, string latitude, string altitude)
     {
-        Longitude = Convert.ToDouble(longitude);
-        Latitude = Convert.ToDouble(latitude);
-        Altitude = Convert.ToDouble(altitude);
+        Longitude = (longitude);
+        Latitude = (latitude);
+        Altitude = (altitude);
     }
 }
