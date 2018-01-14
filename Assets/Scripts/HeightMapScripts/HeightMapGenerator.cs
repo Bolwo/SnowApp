@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class HeightMapGenerator : MonoBehaviour {
 
-    public TextAsset GPSData;
-
 	// Use this for initialization
 	void Start () {
 	    
@@ -18,42 +16,17 @@ public class HeightMapGenerator : MonoBehaviour {
 
     public void UpdateModel()//Called on button click from menu
     {
-        var test = ReadFileToArray();
+        var test = LogHandler.ReadLog();
         foreach(var x in test)
         {
             Debug.Log(x.Latitude + " " + x.Longitude + " " + x.Altitude);
         }
-
-    }
-    List<GPSPosition> ReadFileToArray() //Converts gps text file data to list of GPSPosition data
-    {
-        List<string> GPSList = TextAssetToList(GPSData);
-        List<GPSPosition> GPSPositions = new List<GPSPosition>();
-        foreach(string item in GPSList)
-        {
-            var split = item.Split(',');
-            if(split[0] == "$GPGGA")
-            {
-                GPSPosition pos = new GPSPosition(split[0], split[1], split[2]);
-                GPSPositions.Add(pos);
-            }
-        }
-        return GPSPositions;
+        //this function should use the gps log data to call CreateHeightMap() and generate a heightmap raster image. This will be stored to 
+        //the file system, later to be used to generate the terrain.
     }
 
-    void CreateHeightMap()
+    void CreateHeightMap(List<GPSPosition> gpsdata)
     {
 
-    }
-
-    private List<string> TextAssetToList(TextAsset ta)
-    {
-        var listToReturn = new List<string>();
-        var arrayString = ta.text.Split('\n');
-        foreach (var line in arrayString)
-        {
-            listToReturn.Add(line);
-        }
-        return listToReturn;
     }
 }

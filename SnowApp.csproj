@@ -291,9 +291,6 @@
     <Compile Include="Assets\Scripts\LogHandler.cs" />
     <Compile Include="Assets\Scripts\MenuScripts\MenuController.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\GPSLog\gps1.txt" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
 </Project>

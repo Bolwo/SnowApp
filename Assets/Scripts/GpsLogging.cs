@@ -12,7 +12,7 @@ public class GpsLogging : MonoBehaviour {
         settingsPanel = GameObject.Find("SettingsPanel");
 
         settingsPanel.GetComponentInChildren<Text>().text += Application.persistentDataPath;
-        StartCoroutine(StoreCurrentLocation());
+        StartCoroutine(LogGPSData());
     }
 	
 	// Update is called once per frame
@@ -25,13 +25,13 @@ public class GpsLogging : MonoBehaviour {
         settingsPanel.GetComponentInChildren<Text>().text += "Location is enabled by user: " + Input.location.isEnabledByUser + "/n";
         if (Input.location.status == LocationServiceStatus.Running || Input.location.status == LocationServiceStatus.Initializing)
         {
-            StopLogging();
+            StopLocationTracking();
         } else
         {
-            StartCoroutine(StartLogging());
+            StartCoroutine(StartLocationTracking());
         }
     }
-    IEnumerator StartLogging()
+    IEnumerator StartLocationTracking()
     {
         // First, check if user has location service enabled
         if (!Input.location.isEnabledByUser)
@@ -71,14 +71,14 @@ public class GpsLogging : MonoBehaviour {
         }
     }
 
-    void StopLogging()
+    void StopLocationTracking()
     {
         Input.location.Stop();
         settingsPanel.GetComponentInChildren<Text>().text += "Stopped logging";
         
     }
 
-    IEnumerator StoreCurrentLocation()
+    IEnumerator LogGPSData()
     {
         while(true)
         {

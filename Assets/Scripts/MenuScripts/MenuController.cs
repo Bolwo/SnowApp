@@ -39,6 +39,7 @@ public class MenuController : MonoBehaviour {
     }
     public void ToggleSettingsPanel()
     {
+        string path = Application.persistentDataPath + "/gps1.txt";
         if (settingsPanel.activeSelf)
         {
             settingsPanel.gameObject.SetActive(false);

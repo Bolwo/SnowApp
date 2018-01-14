@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class GPSPosition {
 
-    public string Longitude;
-    public string Latitude;
-    public string Altitude;
+    public double Longitude;
+    public double Latitude;
+    public double Altitude;
 
-    public GPSPosition(string longitude, string latitude, string altitude)
+    public GPSPosition(double longitude, double latitude, double altitude)
     {
         Longitude = (longitude);
         Latitude = (latitude);
