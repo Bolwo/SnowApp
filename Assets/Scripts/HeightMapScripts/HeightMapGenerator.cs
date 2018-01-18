@@ -23,8 +23,8 @@ public class HeightMapGenerator : MonoBehaviour {
         var gpsdata = LogHandler.ReadLog();
         foreach(var x in gpsdata) //test purposes, read log to settings page
         {
-            Debug.Log(x.Latitude + " " + x.Longitude + " " + x.Altitude);
-            settingsPanel.GetComponentInChildren<Text>().text += x.Latitude + " " + x.Longitude + " " + x.Altitude;
+            //Debug.Log(x.Latitude + " " + x.Longitude + " " + x.Altitude);
+            //settingsPanel.GetComponentInChildren<Text>().text += x.Latitude + " " + x.Longitude + " " + x.Altitude;
 
         }
         //this function should use the gps log data to call CreateHeightMap() and generate a heightmap raster image. This will be stored to 
@@ -46,16 +46,16 @@ public class HeightMapGenerator : MonoBehaviour {
         int xdisplace = leftmost;
         int ydisplace = lowest;
 
-        int xheight = highest - lowest;
-        int yheight = rightmost - leftmost;
-        double[,] rasterarray = new double[xheight,yheight]; //create array to that size
+        int xheight = rightmost - leftmost;
+        int yheight = highest - lowest;
+        double[,] rasterarray = new double[xheight + 1,yheight + 1]; //create array to that size
 
         //insert gps data into appropriate index
         foreach(GPSPosition pos in gpsdata)
         {
             rasterarray[pos.Longitude - xdisplace, pos.Latitude - ydisplace] = pos.Altitude;
+            Debug.Log(rasterarray[pos.Longitude - xdisplace, pos.Latitude - ydisplace]);
         }
-
 
     }
 }
