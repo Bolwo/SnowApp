@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -78,15 +79,22 @@ public class GpsLogging : MonoBehaviour {
         
     }
 
-    IEnumerator LogGPSData()
+    IEnumerator LogGPSData() //TODO: may fail when working with an empty gps file (ie, if it has to create it because it does not already exist). This may already be fixed with the try catch though
     {
+
         while(true)
         {
-            settingsPanel.GetComponentInChildren<Text>().text += "tick";
-            if (Input.location.status == LocationServiceStatus.Running)
+            try
             {
-                settingsPanel.GetComponentInChildren<Text>().text += "Updated gps text log";
-                LogHandler.WriteString(Input.location.lastData.latitude + "," + Input.location.lastData.longitude + "," + Input.location.lastData.altitude + "," + Input.location.lastData.horizontalAccuracy + "," + Input.location.lastData.timestamp);
+                settingsPanel.GetComponentInChildren<Text>().text += "tick";
+                if (Input.location.status == LocationServiceStatus.Running)
+                {
+                    settingsPanel.GetComponentInChildren<Text>().text += "Updated gps text log";
+                    LogHandler.WriteString(Input.location.lastData.latitude + "," + Input.location.lastData.longitude + "," + Input.location.lastData.altitude + "," + Input.location.lastData.horizontalAccuracy + "," + Input.location.lastData.timestamp);
+                }
+            } catch(Exception e)
+            {
+
             }
             yield return new WaitForSeconds(5);
         }
