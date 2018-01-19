@@ -35,32 +35,41 @@ public class HeightMapGenerator : MonoBehaviour {
     {
         //find size of array
         IEnumerable<GPSPosition> orderedlat = gpsdata.OrderByDescending(x => x.Latitude);
-        int highest = orderedlat.First().Latitude;
-        int lowest = orderedlat.Last().Latitude;
+        int highestlat = orderedlat.First().Latitude;
+        int lowestlat = orderedlat.Last().Latitude;
 
         IEnumerable<GPSPosition> orderedlong = gpsdata.OrderByDescending(x => x.Longitude);
-        int leftmost = orderedlong.Last().Longitude;
-        int rightmost = orderedlong.First().Longitude;
+        int leftmostlong = orderedlong.Last().Longitude;
+        int rightmostlong = orderedlong.First().Longitude;
 
-        int xdisplace = leftmost;
-        int ydisplace = lowest;
+        int xdisplace = leftmostlong;
+        int ydisplace = lowestlat;
 
-        int xheight = rightmost - leftmost;
-        int yheight = highest - lowest;
+        int xheight = rightmostlong - leftmostlong;
+        int yheight = highestlat - lowestlat;
+
+        //get max and min altitudes
+        IEnumerable<GPSPosition> orderedalt = gpsdata.OrderByDescending(x => x.Altitude);
+        int high = orderedalt.First().Altitude;
+        int low = orderedalt.Last().Altitude;
 
         //double[,] rasterarray = new double[xheight + 1,yheight + 1]; //create array to that size
-        var texture = new Texture2D(xheight + 1, yheight + 1);
+        Texture2D texture = new Texture2D(xheight + 1, yheight + 1);
 
-        Color color = new Color(1, 1, 1);
         Color32[] colors = new Color32[(xheight + 1) * (yheight + 1)];
 
         //insert gps data into appropriate index
         foreach(var pos in gpsdata)
         {
             var colorindex = ((pos.Latitude - ydisplace) * (xheight + 1)) + (pos.Longitude - xdisplace); //find the flattened index of a 2d array
-            colors[colorindex] = color;
+
+            var altitudedifference = high - low;
+            var b = pos.Altitude - low;
+            double altitudefloat = Convert.ToDouble(b) / Convert.ToDouble(altitudedifference);
+
+            colors[colorindex] = new Color((float)altitudefloat, (float)altitudefloat, (float)altitudefloat);
         }
-        texture.SetPixels32(colors); //apply 1d array of colors to 2d texture
+        texture.SetPixels32(colors); //set 1d array of colors to 2d texture pixels
         texture.Apply();
 
         File.WriteAllBytes(Application.persistentDataPath + "/gpsraster.png", texture.EncodeToPNG());
