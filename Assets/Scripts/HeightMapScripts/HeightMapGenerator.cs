@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class HeightMapGenerator : MonoBehaviour {
 
@@ -48,14 +47,22 @@ public class HeightMapGenerator : MonoBehaviour {
 
         int xheight = rightmost - leftmost;
         int yheight = highest - lowest;
-        double[,] rasterarray = new double[xheight + 1,yheight + 1]; //create array to that size
+
+        //double[,] rasterarray = new double[xheight + 1,yheight + 1]; //create array to that size
+        var texture = new Texture2D(xheight + 1, yheight + 1);
+
+        Color color = new Color(1, 1, 1);
+        Color32[] colors = new Color32[(xheight + 1) * (yheight + 1)];
 
         //insert gps data into appropriate index
-        foreach(GPSPosition pos in gpsdata)
+        foreach(var pos in gpsdata)
         {
-            rasterarray[pos.Longitude - xdisplace, pos.Latitude - ydisplace] = pos.Altitude;
-            Debug.Log(rasterarray[pos.Longitude - xdisplace, pos.Latitude - ydisplace]);
+            var colorindex = ((pos.Latitude - ydisplace) * (xheight + 1)) + (pos.Longitude - xdisplace); //find the flattened index of a 2d array
+            colors[colorindex] = color;
         }
+        texture.SetPixels32(colors); //apply 1d array of colors to 2d texture
+        texture.Apply();
 
+        File.WriteAllBytes(Application.persistentDataPath + "/gpsraster.png", texture.EncodeToPNG());
     }
 }

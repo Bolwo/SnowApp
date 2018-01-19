@@ -81,7 +81,6 @@ public class GpsLogging : MonoBehaviour {
 
     IEnumerator LogGPSData() //TODO: may fail when working with an empty gps file (ie, if it has to create it because it does not already exist). This may already be fixed with the try catch though
     {
-
         while(true)
         {
             try
