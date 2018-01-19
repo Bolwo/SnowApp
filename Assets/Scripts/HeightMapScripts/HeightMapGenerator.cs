@@ -53,13 +53,13 @@ public class HeightMapGenerator : MonoBehaviour {
         int high = orderedalt.First().Altitude;
         int low = orderedalt.Last().Altitude;
 
-        //double[,] rasterarray = new double[xheight + 1,yheight + 1]; //create array to that size
         Texture2D texture = new Texture2D(xheight + 1, yheight + 1);
+        var asdf = texture.GetPixel(1, 1);
 
-        Color32[] colors = new Color32[(xheight + 1) * (yheight + 1)];
+        Color32[] colors = CreateBaseColours(xheight, yheight);
 
         //insert gps data into appropriate index
-        foreach(var pos in gpsdata)
+        foreach (var pos in gpsdata)
         {
             var colorindex = ((pos.Latitude - ydisplace) * (xheight + 1)) + (pos.Longitude - xdisplace); //find the flattened index of a 2d array
 
@@ -72,6 +72,17 @@ public class HeightMapGenerator : MonoBehaviour {
         texture.SetPixels32(colors); //set 1d array of colors to 2d texture pixels
         texture.Apply();
 
+        asdf = texture.GetPixel(1, 1);
         File.WriteAllBytes(Application.persistentDataPath + "/gpsraster.png", texture.EncodeToPNG());
+    }
+
+    private static Color32[] CreateBaseColours(int xheight, int yheight)
+    {
+        var colours = new Color32[(xheight + 1) * (yheight + 1)];
+        for (int i = 0; i < colours.Length; i++)
+        {
+            colours[i] = new Color(0, 0, 0, 1);
+        }
+        return colours;
     }
 }
