@@ -9,7 +9,7 @@ public class GPSPosition {
     public int Latitude;
     public int Altitude;
 
-    public GPSPosition(double longitude, double latitude, double altitude)
+    public GPSPosition(double latitude, double longitude, double altitude)
     {
         var accuracy = 15000; //How accurate the data should be handled. Each 0 represents a decimal of accuracy.
         Longitude = Convert.ToInt32(longitude * accuracy);
