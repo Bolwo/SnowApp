@@ -28,10 +28,12 @@ public class HeightMapGenerator : MonoBehaviour {
         }
         //this function should use the gps log data to call CreateHeightMap() and generate a heightmap raster image. This will be stored to 
         //the file system, later to be used to generate the terrain.
-        CreateHeightMap(gpsdata);
+
+        var rasterarray = CreateHeightMap(gpsdata);
+
     }
 
-    void CreateHeightMap(List<GPSPosition> gpsdata)
+    float[,] CreateHeightMap(List<GPSPosition> gpsdata)
     {
         //find size of array
         IEnumerable<GPSPosition> orderedlat = gpsdata.OrderByDescending(x => x.Latitude);
@@ -57,10 +59,12 @@ public class HeightMapGenerator : MonoBehaviour {
         var asdf = texture.GetPixel(1, 1);
 
         Color32[] colors = CreateBaseColours(xheight, yheight);
+        float[,] rasterarray = new float[yheight + 1, xheight + 1]; //create array to that size
 
         //insert gps data into appropriate index
         foreach (var pos in gpsdata)
         {
+            rasterarray[pos.Latitude - ydisplace, pos.Longitude - xdisplace] = GetRelativeAltitude(high, low, pos); //array in (y, x) format
             var colorindex = ((pos.Latitude - ydisplace) * (xheight + 1)) + (pos.Longitude - xdisplace); //find the flattened index of a 2d array
 
             float altitudefloat = GetRelativeAltitude(high, low, pos);
@@ -72,6 +76,26 @@ public class HeightMapGenerator : MonoBehaviour {
 
         asdf = texture.GetPixel(1, 1);
         File.WriteAllBytes(Application.persistentDataPath + "/gpsraster.png", texture.EncodeToPNG());
+
+        //create terrain
+        TerrainData terraindata = new TerrainData();
+        terraindata.heightmapResolution = xheight > yheight ? xheight : yheight;
+        terraindata.SetHeights(0, 0, rasterarray);
+
+        //change texture
+        var textureInSplats = new SplatPrototype[1];
+        var textureIn = new Texture2D[15];
+
+        textureInSplats[0] = new SplatPrototype();
+        textureInSplats[0].texture = texture;
+        textureInSplats[0].tileSize = new Vector2(xheight + 1, yheight + 1);
+        terraindata.splatPrototypes = textureInSplats;
+       
+        var terrain = Terrain.CreateTerrainGameObject(terraindata);
+
+        
+        
+        return rasterarray;
     }
 
     private static float GetRelativeAltitude(int high, int low, GPSPosition pos) //converts the altitude into a scale between 0 and 1 based on max and min altitudes
