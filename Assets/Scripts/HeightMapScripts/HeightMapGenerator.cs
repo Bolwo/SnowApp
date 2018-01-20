@@ -68,7 +68,7 @@ public class HeightMapGenerator : MonoBehaviour {
             var colorindex = ((pos.Latitude - ydisplace) * (xheight + 1)) + (pos.Longitude - xdisplace); //find the flattened index of a 2d array
 
             float altitudefloat = GetRelativeAltitude(high, low, pos);
-
+            Debug.Log(altitudefloat);
             colors[colorindex] = new Color(altitudefloat, altitudefloat, altitudefloat);
         }
         texture.SetPixels32(colors); //set 1d array of colors to 2d texture pixels
@@ -78,8 +78,10 @@ public class HeightMapGenerator : MonoBehaviour {
         File.WriteAllBytes(Application.persistentDataPath + "/gpsraster.png", texture.EncodeToPNG());
 
         //create terrain
-        TerrainData terraindata = new TerrainData();
-        terraindata.heightmapResolution = xheight > yheight ? xheight : yheight;
+        TerrainData terraindata = new TerrainData {
+            size = new Vector3(xheight + 1, 50, yheight + 1), //change value to increase scale in the upwards direction
+        };
+       terraindata.heightmapResolution = xheight > yheight ? xheight + 1 : yheight + 1;
         terraindata.SetHeights(0, 0, rasterarray);
 
         //change texture
@@ -88,12 +90,10 @@ public class HeightMapGenerator : MonoBehaviour {
 
         textureInSplats[0] = new SplatPrototype();
         textureInSplats[0].texture = texture;
-        textureInSplats[0].tileSize = new Vector2(xheight + 1, yheight + 1);
+        textureInSplats[0].tileSize = new Vector2((xheight + 1) * terraindata.heightmapScale.x, (yheight + 1) * terraindata.heightmapScale.z);
         terraindata.splatPrototypes = textureInSplats;
-       
-        var terrain = Terrain.CreateTerrainGameObject(terraindata);
 
-        
+        var terrain = Terrain.CreateTerrainGameObject(terraindata);
         
         return rasterarray;
     }
