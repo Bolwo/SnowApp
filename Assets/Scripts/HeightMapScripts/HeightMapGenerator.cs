@@ -35,25 +35,26 @@ public class HeightMapGenerator : MonoBehaviour {
 
     float[,] CreateHeightMap(List<GPSPosition> gpsdata)
     {
+        var accuracy = 10000;
         //find size of array
         IEnumerable<GPSPosition> orderedlat = gpsdata.OrderByDescending(x => x.Latitude);
-        int highestlat = orderedlat.First().Latitude;
-        int lowestlat = orderedlat.Last().Latitude;
+        double highestlat = orderedlat.First().Latitude;
+        double lowestlat = orderedlat.Last().Latitude;
 
         IEnumerable<GPSPosition> orderedlong = gpsdata.OrderByDescending(x => x.Longitude);
-        int leftmostlong = orderedlong.Last().Longitude;
-        int rightmostlong = orderedlong.First().Longitude;
+        double leftmostlong = orderedlong.Last().Longitude;
+        double rightmostlong = orderedlong.First().Longitude;
 
-        int xdisplace = leftmostlong;
-        int ydisplace = lowestlat;
+        double xdisplace = leftmostlong;
+        double ydisplace = lowestlat;
 
-        int xheight = rightmostlong - leftmostlong;
-        int yheight = highestlat - lowestlat;
+        int xheight = Convert.ToInt32((rightmostlong - leftmostlong) * accuracy);
+        int yheight = Convert.ToInt32((highestlat - lowestlat) * accuracy);
 
         //get max and min altitudes
         IEnumerable<GPSPosition> orderedalt = gpsdata.OrderByDescending(x => x.Altitude);
-        int high = orderedalt.First().Altitude;
-        int low = orderedalt.Last().Altitude;
+        double high = orderedalt.First().Altitude;
+        double low = orderedalt.Last().Altitude;
 
         Texture2D texture = new Texture2D(xheight + 1, yheight + 1);
         var asdf = texture.GetPixel(1, 1);
@@ -63,9 +64,12 @@ public class HeightMapGenerator : MonoBehaviour {
 
         //insert gps data into appropriate index
         foreach (var pos in gpsdata)
-        {
-            rasterarray[pos.Latitude - ydisplace, pos.Longitude - xdisplace] = GetRelativeAltitude(high, low, pos); //array in (y, x) format
-            var colorindex = ((pos.Latitude - ydisplace) * (xheight + 1)) + (pos.Longitude - xdisplace); //find the flattened index of a 2d array
+        { //add estimates between points: store previous value, compare current and previous, calculate intermediate points, update them with averaged altitude
+            int relativelatitude = Convert.ToInt32((pos.Latitude - ydisplace) * accuracy);
+            int relativelongitude = Convert.ToInt32((pos.Longitude - xdisplace) * accuracy);
+
+            rasterarray[relativelatitude, relativelongitude] = GetRelativeAltitude(high, low, pos); //array in (y, x) format
+            var colorindex = (relativelatitude * (xheight + 1)) + relativelongitude; //find the flattened index of a 2d array
 
             float altitudefloat = GetRelativeAltitude(high, low, pos);
             Debug.Log(altitudefloat);
@@ -81,7 +85,7 @@ public class HeightMapGenerator : MonoBehaviour {
         TerrainData terraindata = new TerrainData {
             size = new Vector3(xheight + 1, 50, yheight + 1), //change value to increase scale in the upwards direction
         };
-       terraindata.heightmapResolution = xheight > yheight ? xheight + 1 : yheight + 1;
+        terraindata.heightmapResolution = xheight > yheight ? xheight + 1 : yheight + 1;
         terraindata.SetHeights(0, 0, rasterarray);
 
         //change texture
@@ -98,11 +102,11 @@ public class HeightMapGenerator : MonoBehaviour {
         return rasterarray;
     }
 
-    private static float GetRelativeAltitude(int high, int low, GPSPosition pos) //converts the altitude into a scale between 0 and 1 based on max and min altitudes
+    private static float GetRelativeAltitude(double high, double low, GPSPosition pos) //converts the altitude into a scale between 0 and 1 based on max and min altitudes
     {
         var altitudedifference = high - low;
         var b = pos.Altitude - low;
-        float altitudefloat = (float)(Convert.ToDouble(b) / Convert.ToDouble(altitudedifference));
+        float altitudefloat = (float)(b / altitudedifference);
         return altitudefloat;
     }
 

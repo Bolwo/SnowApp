@@ -5,15 +5,14 @@ using UnityEngine;
 
 public class GPSPosition {
 
-    public int Longitude;
-    public int Latitude;
-    public int Altitude;
+    public double Longitude;
+    public double Latitude;
+    public double Altitude;
 
     public GPSPosition(double latitude, double longitude, double altitude)
     {
-        var accuracy = 15000; //How accurate the data should be handled. Each 0 represents a decimal of accuracy.
-        Longitude = Convert.ToInt32(longitude * accuracy);
-        Latitude = Convert.ToInt32(latitude * accuracy);
-        Altitude = Convert.ToInt32(altitude * accuracy);
+        Longitude = longitude;
+        Latitude = latitude;
+        Altitude = altitude;
     }
 }
