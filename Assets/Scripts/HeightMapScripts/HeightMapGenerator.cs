@@ -35,7 +35,7 @@ public class HeightMapGenerator : MonoBehaviour {
 
     float[,] CreateHeightMap(List<GPSPosition> gpsdata)
     {
-        var accuracy = 10000;
+        var accuracy = 1000;
         //find size of array
         IEnumerable<GPSPosition> orderedlat = gpsdata.OrderByDescending(x => x.Latitude);
         double highestlat = orderedlat.First().Latitude;
@@ -62,6 +62,8 @@ public class HeightMapGenerator : MonoBehaviour {
         Color32[] colors = CreateBaseColours(xheight, yheight);
         float[,] rasterarray = new float[yheight + 1, xheight + 1]; //create array to that size
 
+        GPSPosition previousPos = null;
+        
         //insert gps data into appropriate index
         foreach (var pos in gpsdata)
         { //add estimates between points: store previous value, compare current and previous, calculate intermediate points, update them with averaged altitude
@@ -74,23 +76,54 @@ public class HeightMapGenerator : MonoBehaviour {
             float altitudefloat = GetRelativeAltitude(high, low, pos);
             Debug.Log(altitudefloat);
             colors[colorindex] = new Color(altitudefloat, altitudefloat, altitudefloat);
+
+            if (previousPos != null)
+            {
+                //calculate rasterarray indexes between previousPos and Pos
+                //set each value to the estimated height
+                var y2 = relativelatitude;
+                var x2 = relativelongitude;
+                var x1 = Convert.ToInt32((previousPos.Longitude - xdisplace) * accuracy);
+                var y1 = Convert.ToInt32((previousPos.Latitude - ydisplace) * accuracy);
+
+                //formula y = ax + b 
+                // for calculating the coordinates between the two latest points
+                if (y1 - y2 != 0)
+                {
+                    var a = (x1 - x2) / (y1 - y2);
+                    var b = (y1 - (a * x1));
+
+                    for (int x = x1; x <= x2; x++)
+                    {
+                        int y = Convert.ToInt32((a * x) + b);
+                        try
+                        {
+                            rasterarray[y, x] = 1.0f;
+                        } catch (Exception e)
+                        {
+                            Debug.Log(y + " " + x);
+                        }
+
+                    }
+                }
+               
+            }
+            previousPos = pos;
         }
         texture.SetPixels32(colors); //set 1d array of colors to 2d texture pixels
         texture.Apply();
 
-        asdf = texture.GetPixel(1, 1);
         File.WriteAllBytes(Application.persistentDataPath + "/gpsraster.png", texture.EncodeToPNG());
 
         //create terrain
         TerrainData terraindata = new TerrainData {
-            size = new Vector3(xheight + 1, 50, yheight + 1), //change value to increase scale in the upwards direction
+            size = new Vector3(xheight + 1, 50, yheight + 1), //change value to increase scale in the upwards direction, change to be based on x and y values?
         };
-        terraindata.heightmapResolution = xheight > yheight ? xheight + 1 : yheight + 1;
+        terraindata.heightmapResolution = xheight > yheight ? xheight * 2 + 1 : yheight * 2 + 1; //*2 for now just to stop error. todo: fix bug that makes resolution less than biggest height for some reason
         terraindata.SetHeights(0, 0, rasterarray);
 
         //change texture
         var textureInSplats = new SplatPrototype[1];
-        var textureIn = new Texture2D[15];
 
         textureInSplats[0] = new SplatPrototype();
         textureInSplats[0].texture = texture;
